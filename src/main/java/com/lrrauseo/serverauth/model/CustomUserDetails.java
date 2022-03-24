@@ -28,11 +28,11 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Arrays
+    var authorities = Arrays
       .stream(role.split(","))
       .map(SimpleGrantedAuthority::new)
       .collect(Collectors.toList());
-    //return null;
+    return authorities;
   }
 
   @Override

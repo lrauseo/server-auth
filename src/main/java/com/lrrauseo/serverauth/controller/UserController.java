@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,14 +44,15 @@ public class UserController {
   @PostMapping("/authenticate")
   public ResponseEntity<String> validate(@RequestBody UserAuth userAuth) {
     try {
-      authenticationManager.authenticate(
+      var userAuthenticated = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
           userAuth.getLogin(),
           userAuth.getPassword()
         )
       );
+
       return new ResponseEntity<>(
-        jwtUtil.generateToken(userAuth.getLogin()),
+        jwtUtil.generateToken(userAuthenticated),
         HttpStatus.ACCEPTED
       );
     } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.lrrauseo.serverauth.security.util;
 
+import com.lrrauseo.serverauth.model.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Configuration
@@ -21,9 +23,12 @@ public class JwtUtil {
     key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
   }
 
-  public String generateToken(String username) {
+  public String generateToken(Authentication userAuthenticated) {
     Map<String, Object> claims = new HashMap<>();
-    return createToken(claims, username);
+    var user = (CustomUserDetails) userAuthenticated.getPrincipal();
+    claims.put("Roles", userAuthenticated.getAuthorities());
+
+    return createToken(claims, user.getUsername());
   }
 
   private String createToken(Map<String, Object> claims, String subject) {
@@ -32,7 +37,7 @@ public class JwtUtil {
       .setClaims(claims)
       .setSubject(subject)
       .setIssuedAt(new Date(System.currentTimeMillis()))
-      .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+      .setExpiration(new Date(System.currentTimeMillis() + 900000))
       .signWith(key)
       .compact();
   }
