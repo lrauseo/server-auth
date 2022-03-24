@@ -7,6 +7,7 @@ import com.lrrauseo.serverauth.security.util.JwtUtil;
 import com.lrrauseo.serverauth.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,7 @@ public class UserController {
   }
 
   @PostMapping("/authenticate")
-  public String validate(@RequestBody UserAuth userAuth) {
+  public ResponseEntity<String> validate(@RequestBody UserAuth userAuth) {
     try {
       authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
@@ -48,9 +49,15 @@ public class UserController {
           userAuth.getPassword()
         )
       );
-      return jwtUtil.generateToken(userAuth.getLogin());
+      return new ResponseEntity<>(
+        jwtUtil.generateToken(userAuth.getLogin()),
+        HttpStatus.ACCEPTED
+      );
     } catch (Exception e) {
-      throw new UsernameNotFoundException("Login/Senha inválidos");
+      return new ResponseEntity<>(
+        "Login/Senha inválidos",
+        HttpStatus.UNAUTHORIZED
+      );
     }
   }
 }
