@@ -1,7 +1,9 @@
 package com.lrrauseo.serverauth.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +30,11 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    var authorities = Arrays
-      .stream(role.split(","))
-      .map(SimpleGrantedAuthority::new)
-      .collect(Collectors.toList());
+    List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+
+    for (String roleString : role.split(",")) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + roleString));
+    }
     return authorities;
   }
 

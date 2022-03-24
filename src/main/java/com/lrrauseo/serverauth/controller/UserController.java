@@ -37,6 +37,7 @@ public class UserController {
   }
 
   @GetMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<CreatedUserDto>> getAll() {
     return ResponseEntity.ok(userService.findAll());
   }
