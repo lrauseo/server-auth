@@ -1,0 +1,13 @@
+
+server:
+    port: 8090
+
+spring:
+    data:
+        mongodb:
+            username: root
+            password: mongo123
+            host: 127.0.0.1    
+            database: server-auth-db
+            authentication-database: admin
+        
