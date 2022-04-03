@@ -3,22 +3,17 @@ package com.lrrauseo.serverauth.service.impl;
 import com.lrrauseo.serverauth.dto.CreatedUserDto;
 import com.lrrauseo.serverauth.dto.NewUserDto;
 import com.lrrauseo.serverauth.mapper.UserMapper;
-import com.lrrauseo.serverauth.model.CustomUserDetails;
 import com.lrrauseo.serverauth.model.UserEntity;
 import com.lrrauseo.serverauth.repository.UserRepository;
 import com.lrrauseo.serverauth.service.UserService;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
   @Override
@@ -43,12 +38,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username)
-    throws UsernameNotFoundException {
-    var user = this.findByLogin(username);
-    if (user == null) throw new UsernameNotFoundException(
-      "Usuario [" + username + "] não encontrato"
-    );
-    return new CustomUserDetails(UserMapper.INSTANCE.toUsuario(user));
+  public UserEntity findById(String id) throws UserPrincipalNotFoundException {
+    return userRepository
+      .findById(id)
+      .orElseThrow(
+        () -> new UserPrincipalNotFoundException("Usuário não encontrado")
+      );
   }
+  // @Override
+  // public UserDetails loadUserByUsername(String username)
+  //   throws UsernameNotFoundException {
+  //   var user = this.findByLogin(username);
+  //   if (user == null) throw new UsernameNotFoundException(
+  //     "Usuario [" + username + "] não encontrato"
+  //   );
+  //   return new CustomUserDetails(UserMapper.INSTANCE.toUsuario(user));
+  // }
+
 }
